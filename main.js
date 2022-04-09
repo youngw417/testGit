@@ -8,8 +8,11 @@ when it is clicked, console log("clicked");
 */
 
 const score = document.querySelector('.score');
-const startScreen = document.querySelector('.startScreen');
+const startScreen = document.querySelector('.start_1');
 const gameArea = document.querySelector('.gameArea');
+const sound = new Audio('car_crash2.wav');
+const sound2 = new Audio('car_passing.wav');
+
 const keys = {
   ArrrowUP: false,
   ArrowDown: false,
@@ -41,6 +44,9 @@ function start() {
   gameArea.innerHTML = '';
   score.classList.remove('hide');
   player.start = true;
+  sound.pause();
+  sound.currentTime = 0;
+  sound2.play();
   player.score = 0;
   for (let x = 0; x < 10; x++) {
     const div = document.createElement('div');
@@ -81,7 +87,11 @@ function playGame() {
   moveLines();
   moveEnemy(car);
   const road = gameArea.getBoundingClientRect();
-  console.log(road);
+  console.log('sound', sound2.currentTime);
+  if (sound2.currentTime >= 10) {
+    sound2.play();
+    sound2.currentTime = 0;
+  }
   if (player.start) {
     if (keys.ArrowUp && player.y > road.y) {
       player.y -= player.speed;
@@ -107,7 +117,9 @@ function moveEnemy(myCar) {
   let ele = document.querySelectorAll('.enemy');
   ele.forEach((each) => {
     if (isCollide(myCar, each)) {
-      console.log('HIT');
+      sound2.pause();
+      sound2.currentTime = 0;
+      sound.play();
       endGame();
       return;
     }
@@ -143,7 +155,6 @@ function isCollide(a, b) {
 //
 
 function moveLines() {
-  console.log('moveLines');
   const lines = document.querySelectorAll('.line');
   lines.forEach((item) => {
     if (item.y >= 1500) {
