@@ -88,3 +88,12 @@ section {
   background-color: black;
   color: white;
 }
+
+.start {
+  margin: auto;
+}
+
+.start_1 {
+  color: white;
+  background-color: red;
+}
