@@ -1,8 +1,11 @@
 /*
-select following in javascript with querySelector
-score, startScreen, gameArea
-addEvenlistener onto startScreen with function name start
-when it is clicked, console log("clicked");
+HW for Spring Break
+1. create a select field to create multiple speed choice
+2. create a select field to create multiple enemy cars (5, 6, 7, 8, 9, 10)
+3. search for the sound file for car driving sound and use this file
+to create sounds when the car starts driving
+4. search for the sound file for car crash sound to create sounds when the car crashes to the enemy car
+
 
 
 */
