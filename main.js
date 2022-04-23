@@ -164,5 +164,3 @@ function moveLines() {
     item.style.top = item.y + 'px';
   });
 }
-
-// revert test
