@@ -1,5 +1,5 @@
 /*
-test for git rm
+test for git rm test 3
 select following in javascript with querySelector
 score, startScreen, gameArea
 addEvenlistener onto startScreen with function name start
