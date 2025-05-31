@@ -1,5 +1,5 @@
 {
-	"name": "createsourceinstorage1",
+	"name": "loadpassengercount",
 	"properties": {
 		"nbformat": 4,
 		"nbformat_minor": 2,
@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "7d365e9a-dea7-4e41-98eb-f2d3c66158c2"
+				"spark.autotune.trackingId": "099fb054-fa18-4697-83ca-af1419172f40"
 			}
 		},
 		"metadata": {
@@ -53,23 +53,15 @@
 				"metadata": {
 					"microsoft": {
 						"language": "python"
-					}
+					},
+					"collapsed": false
 				},
 				"source": [
-					"%%pyspark\n",
-					"df = spark.sql(\"SELECT * FROM nyctaxi.passengercountstats\")\n",
-					"df = df.repartition(1) # This ensures we'll get a single file during write()\n",
-					"df.write.mode(\"overwrite\").csv(\"/NYCTaxi/PassengerCountStats_csvformat\")\n",
-					"df.write.mode(\"overwrite\").parquet(\"/NYCTaxi/PassengerCountStats_parquetformat\")"
+					"%%pyspark\r\n",
+					"df = spark.read.load('abfss://yujidb1@youngwon2.dfs.core.windows.net/NYCTaxi/PassengerCountStats_parquetformat/part-00000-491ddcb4-caca-4a56-b01e-e1c77995bde1-c000.snappy.parquet', format='parquet')\r\n",
+					"display(df.limit(10))"
 				],
-				"execution_count": null
-			},
-			{
-				"cell_type": "code",
-				"source": [
-					""
-				],
-				"execution_count": null
+				"execution_count": 2
 			}
 		]
 	}

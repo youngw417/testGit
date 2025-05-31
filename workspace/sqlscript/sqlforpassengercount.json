@@ -1,0 +1,17 @@
+{
+	"name": "sqlforpassengercount",
+	"properties": {
+		"content": {
+			"query": "-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://youngwon2.dfs.core.windows.net/yujidb1/NYCTaxi/PassengerCountStats_parquetformat/part-00000-491ddcb4-caca-4a56-b01e-e1c77995bde1-c000.snappy.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n\nSELECT * FROM OPENROWSET(\n        BULK 'https://youngwon2.dfs.core.windows.net/yujidb1/NYCTaxi/PassengerCountStats_parquetformat/part-00000-491ddcb4-caca-4a56-b01e-e1c77995bde1-c000.snappy.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result] WHERE passenger_count = 1;\n\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
