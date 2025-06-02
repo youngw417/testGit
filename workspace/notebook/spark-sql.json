@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "177bdbbc-d083-4d7c-a6ba-9d8c4d643197"
+				"spark.autotune.trackingId": "2777b6c2-c96e-4364-b773-7ebb34636d74"
 			}
 		},
 		"metadata": {
@@ -50,10 +50,26 @@
 		"cells": [
 			{
 				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
 				"source": [
-					"df = spark.read.csv(\"abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/customer.csv\", header=True, inferSchema = True)"
+					"df = spark.read.csv(\"abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/customer.csv\", header=True, inferSchema = True)\n",
+					"display(df)"
 				],
-				"execution_count": null
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df.createTempView(\"customerView\")\n",
+					"df1 = spark.sql(\"select * from customerView\")\n",
+					"display(df1)"
+				],
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
