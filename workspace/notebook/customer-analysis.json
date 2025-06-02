@@ -1,0 +1,172 @@
+{
+	"name": "customer-analysis",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "spark1",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "6e82c121-b761-479a-802e-79f4a39da8ae"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/3938e0db-babd-4824-8ebc-cf8985f73151/resourceGroups/young1/providers/Microsoft.Synapse/workspaces/youngs-space/bigDataPools/spark1",
+				"name": "spark1",
+				"type": "Spark",
+				"endpoint": "https://youngs-space.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/spark1",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.4",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "python"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"df = spark.read.load('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/customer.csv', format='csv'\r\n",
+					"## If header exists uncomment line below\r\n",
+					"##, header=True\r\n",
+					")\r\n",
+					"display(df.limit(10))"
+				],
+				"execution_count": 8
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"from pyspark.sql.types import *\r\n",
+					"# Define the schema\r\n",
+					"schema = StructType([\r\n",
+					"    StructField(\"customer_id\", IntegerType(), True),\r\n",
+					"    StructField(\"name\", StringType(), True),\r\n",
+					"    StructField(\"email\", StringType(), True),\r\n",
+					"    StructField(\"country\", StringType(), True),\r\n",
+					"    StructField(\"customer_type\", StringType(), True),\r\n",
+					"    StructField(\"registration_date\", DateType(), True),\r\n",
+					"    StructField(\"age\", IntegerType(), True),\r\n",
+					"    StructField(\"gender\", StringType(), True),\r\n",
+					"    StructField(\"total_purchases\", IntegerType(), True),\r\n",
+					"    StructField(\"ingestion_timestamp\", TimestampType(), True)\r\n",
+					"])\r\n",
+					"\r\n",
+					"df1 = spark.read.csv(\"abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/customer.csv\", header=True, schema=schema)\r\n",
+					"df1.printSchema()"
+				],
+				"execution_count": 10
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"display(df1.limit(10))"
+				],
+				"execution_count": 11
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"from pyspark.sql.functions import col, column\r\n",
+					"df2 = df1.filter(df1['customer_type'] == 'VIP')\r\n",
+					"df3 = df1.filter(col('customer_type') == 'Regular')\r\n",
+					"df4 = df1.filter(column('customer_type') == 'Premium')\r\n",
+					"df5 = df1.filter(df1.customer_type == 'VIP')\r\n",
+					"df6 = df1.filter((df1.customer_type == 'VIP') & (df1.country == 'USA'))\r\n",
+					"df7 = df1.where((df1.customer_type == 'VIP') & (df1.country == 'USA'))\r\n",
+					"df8 = df1.where((df1.customer_type == 'VIP') | (df1.country == 'USA'))\r\n",
+					"display(df8.limit(10))"
+				],
+				"execution_count": 25
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"from pyspark.sql.functions import when\r\n",
+					"df2 = df1.withColumn(\"salary\", col(\"age\") * 1000)\r\n",
+					"df3 = df1.withColumn(\"senority\", when(col(\"age\") > 30, \"senior\").otherwise(\"junior\"))\r\n",
+					"display(df3.limit(10))"
+				],
+				"execution_count": 29
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df4 = df3.withColumnRenamed(\"senority\", \"is_senior\")\r\n",
+					"display(df4.limit(10))"
+				],
+				"execution_count": 30
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df5 = df4.drop(\"is_senior\")\r\n",
+					"df6 = df5.drop(\"is_senior\", \"age\", \"gender\")\r\n",
+					"df6.printSchema()\r\n",
+					"#display(df6.limit(10))"
+				],
+				"execution_count": 33
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df2 = df1.select(\"age\", \"gender\", \"customer_type\")\r\n",
+					"df3 = df1.select(\"age\", \"gender\", \"customer_type\", col('age') * 1000)\r\n",
+					"df4 = df1.select(\"age\", \"gender\", \"customer_type\", (col('age') * 1000).alias(\"salary\"))\r\n",
+					"display(df4.limit(10))"
+				],
+				"execution_count": 38
+			}
+		]
+	}
+}
