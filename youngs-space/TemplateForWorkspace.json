@@ -287,7 +287,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "acd36093-2081-4bfb-a53c-b43313104eb5"
+						"spark.autotune.trackingId": "32871c8e-6328-448e-8f5a-70453ae1bc1e"
 					}
 				},
 				"metadata": {
@@ -312,8 +312,7 @@
 						"sparkVersion": "3.4",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -339,7 +338,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"from pyspark.sql.types import *\r\n",
 							"# Define the schema\r\n",
@@ -448,7 +446,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"df9 = spark.read.load('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/sampleNested.json')\r\n",
 							"## If header exists uncomment line below\r\n",
@@ -461,7 +458,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"df10 = spark.read.json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/SampleNested.json')\r\n",
 							"## If header exists uncomment line below\r\n",
@@ -566,7 +562,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "65ff552f-54a1-4ebd-9622-03f9323279c3"
+						"spark.autotune.trackingId": "4e2fc91c-ab51-406a-8299-df3942dd33bc"
 					}
 				},
 				"metadata": {
@@ -607,7 +603,7 @@
 						},
 						"source": [
 							"%%pyspark\n",
-							"df = spark.read.json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/SampleNested.json')\n",
+							"#df = spark.read.json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/SampleNested.json')\n",
 							"## If header exists uncomment line below\n",
 							"##, header=True\n",
 							""
@@ -621,8 +617,8 @@
 							"collapsed": false
 						},
 						"source": [
-							"df1 = df.select(\"address.city\", \"address.state\", \"name\", \"email\")\n",
-							"display(df1.limit(10))"
+							"# df1 = df.select(\"address.city\", \"address.state\", \"name\", \"email\")\n",
+							"# display(df1.limit(10))"
 						],
 						"outputs": [],
 						"execution_count": null
@@ -947,6 +943,7 @@
 							"# if there is something in the folder, it will ignore\n",
 							"# f4.write.mode(\"ignore\").json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/output/')\n",
 							"f4.write.mode(\"error\").json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/output/')\n",
+							"f4.write.mode(\"error\").option(\"header\", \"True\").partitionBy(\"customer_type\").cvs('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/output/cvs_partition/')\n",
 							""
 						],
 						"outputs": [],
