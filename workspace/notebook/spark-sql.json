@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "4c2eb9a2-9da1-45bd-92d8-58a2c6b79de5"
+				"spark.autotune.trackingId": "7cb55727-2192-4596-90e5-8c6bdd4ec6a5"
 			}
 		},
 		"metadata": {
@@ -98,6 +98,17 @@
 					"display(spark.sql(\"show views\"))"
 				],
 				"execution_count": 9
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df.createGlobalTempView(\"customer_global\")\n",
+					"display(spark.sql(\"select * from global_temp.customer_global\"))"
+				],
+				"execution_count": 10
 			}
 		]
 	}
