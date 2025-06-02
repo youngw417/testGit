@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "ebf72af8-8588-4499-af51-7594c9570a21"
+				"spark.autotune.trackingId": "fec99ef4-4c0e-47f9-ba45-72451f79fa9e"
 			}
 		},
 		"metadata": {
@@ -57,7 +57,7 @@
 					"df = spark.read.csv(\"abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/customer.csv\", header=True, inferSchema = True)\n",
 					"display(df)"
 				],
-				"execution_count": 3
+				"execution_count": 19
 			},
 			{
 				"cell_type": "code",
@@ -69,14 +69,14 @@
 					"df1 = spark.sql(\"select * from customerView\")\n",
 					"display(df1)"
 				],
-				"execution_count": 4
+				"execution_count": 20
 			},
 			{
 				"cell_type": "code",
 				"source": [
 					"df.createOrReplaceTempView(\"customer_new\")"
 				],
-				"execution_count": 6
+				"execution_count": 21
 			},
 			{
 				"cell_type": "code",
@@ -86,7 +86,7 @@
 				"source": [
 					"display(spark.sql(\"show views\"))"
 				],
-				"execution_count": 7
+				"execution_count": 22
 			},
 			{
 				"cell_type": "code",
@@ -97,7 +97,7 @@
 					"spark.sql(\"drop view customer_new\")\n",
 					"display(spark.sql(\"show views\"))"
 				],
-				"execution_count": 9
+				"execution_count": 23
 			},
 			{
 				"cell_type": "code",
@@ -108,7 +108,7 @@
 					"df.createGlobalTempView(\"customer_global\")\n",
 					"display(spark.sql(\"select * from global_temp.customer_global\"))"
 				],
-				"execution_count": 10
+				"execution_count": 24
 			},
 			{
 				"cell_type": "code",
@@ -119,7 +119,7 @@
 					"df.createOrReplaceGlobalTempView(\"customer_new_global\")\n",
 					"display(spark.sql(\"show views in global_temp\"))"
 				],
-				"execution_count": 11
+				"execution_count": 25
 			},
 			{
 				"cell_type": "code",
@@ -130,7 +130,7 @@
 					"spark.sql(\"drop view global_temp.customer_new_global\")\n",
 					"display(spark.sql(\"show views in global_temp\"))"
 				],
-				"execution_count": 12
+				"execution_count": 26
 			},
 			{
 				"cell_type": "code",
@@ -141,7 +141,7 @@
 					"df2 = spark.sql(\"select * from customerview where customer_type = 'VIP'\")\n",
 					"display(df2)"
 				],
-				"execution_count": 16
+				"execution_count": 27
 			},
 			{
 				"cell_type": "code",
@@ -149,10 +149,38 @@
 					"collapsed": false
 				},
 				"source": [
-					"df3 = spark.sql(\"select country, count(customer_id) from customerview group by country\")\n",
+					"df3 = spark.sql(\"select country, count(customer_id) as customer_count from customerview group by country order by customer_count desc\")\n",
 					"display(df3)"
 				],
-				"execution_count": 18
+				"execution_count": 30
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df4 = spark.sql(\"select distinct customer_type from customerview\")\n",
+					"display(df4)"
+				],
+				"execution_count": 31
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df2.write.mode(\"overwrite\").saveAsTable(\"customer_vip_table\")"
+				],
+				"execution_count": 33
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"display(spark.sql(\"select * from customer_vip_table\"))"
+				],
+				"execution_count": 34
 			}
 		]
 	}
