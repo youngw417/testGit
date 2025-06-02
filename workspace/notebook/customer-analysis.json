@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "6e82c121-b761-479a-802e-79f4a39da8ae"
+				"spark.autotune.trackingId": "97d99c4e-1d9b-406d-8067-a53de9c2f2fa"
 			}
 		},
 		"metadata": {
@@ -166,6 +166,26 @@
 					"display(df4.limit(10))"
 				],
 				"execution_count": 38
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df9 = spark.read.load('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/sampleNested.json')\r\n",
+					"## If header exists uncomment line below\r\n",
+					"##, header=True\r\n",
+					")\r\n",
+					"display(df9.limit(10))"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df10 = spark.read.json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/SampleNested.json')\r\n",
+					"## If header exists uncomment line below\r\n",
+					"##, header=True"
+				],
+				"execution_count": null
 			}
 		]
 	}

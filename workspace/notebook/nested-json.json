@@ -1,0 +1,127 @@
+{
+	"name": "nested-json",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "spark1",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "e28ba065-ed17-450e-b622-196073a4e40e"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/3938e0db-babd-4824-8ebc-cf8985f73151/resourceGroups/young1/providers/Microsoft.Synapse/workspaces/youngs-space/bigDataPools/spark1",
+				"name": "spark1",
+				"type": "Spark",
+				"endpoint": "https://youngs-space.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/spark1",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.4",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "python"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%pyspark\n",
+					"df = spark.read.json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/SampleNested.json')\n",
+					"## If header exists uncomment line below\n",
+					"##, header=True\n",
+					""
+				],
+				"execution_count": 43
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df1 = df.select(\"address.city\", \"address.state\", \"name\", \"email\")\n",
+					"display(df1.limit(10))"
+				],
+				"execution_count": 44
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df2 = spark.read.load('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/customer.csv', format='csv'\n",
+					"## If header exists uncomment line below\n",
+					", header=True\n",
+					")"
+				],
+				"execution_count": 49
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"display(df2.limit(10))"
+				],
+				"execution_count": 50
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df3 = df2.filter(\"customer_type == 'VIP'\")\n",
+					"df4 = df2.filter(\"customer_type == 'Regular'\")\n",
+					"df5 = df3.union(df4)\n",
+					"df6 = df3.union(df4).union(df2)\n",
+					"df7 = df6.distinct()\n",
+					"display(df7)"
+				],
+				"execution_count": 56
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df8 = df7.select(\"customer_type\", \"country\").distinct()\n",
+					"display(df8)"
+				],
+				"execution_count": 58
+			}
+		]
+	}
+}
