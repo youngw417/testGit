@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "76d88b3b-cd61-4032-a1e1-8c9659d85958"
+				"spark.autotune.trackingId": "7293765a-656e-4bbf-af51-ba209759d5f9"
 			}
 		},
 		"metadata": {
@@ -63,7 +63,7 @@
 					"##, header=True\n",
 					""
 				],
-				"execution_count": null
+				"execution_count": 10
 			},
 			{
 				"cell_type": "code",
@@ -74,7 +74,7 @@
 					"# df1 = df.select(\"address.city\", \"address.state\", \"name\", \"email\")\n",
 					"# display(df1.limit(10))"
 				],
-				"execution_count": null
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -96,7 +96,7 @@
 					"\n",
 					"df2 = spark.read.csv(\"abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/customer.csv\", header=True, schema=schema)"
 				],
-				"execution_count": null
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -106,7 +106,7 @@
 				"source": [
 					"display(df2.limit(10))"
 				],
-				"execution_count": null
+				"execution_count": 13
 			},
 			{
 				"cell_type": "code",
@@ -121,7 +121,7 @@
 					"df7 = df6.distinct()\n",
 					"display(df7)"
 				],
-				"execution_count": null
+				"execution_count": 14
 			},
 			{
 				"cell_type": "code",
@@ -132,7 +132,7 @@
 					"df8 = df7.select(\"customer_type\", \"country\").distinct()\n",
 					"display(df8)"
 				],
-				"execution_count": null
+				"execution_count": 15
 			},
 			{
 				"cell_type": "code",
@@ -142,7 +142,7 @@
 					"df3 = df2.na.drop()\n",
 					"print(df3.count())"
 				],
-				"execution_count": null
+				"execution_count": 16
 			},
 			{
 				"cell_type": "code",
@@ -153,7 +153,7 @@
 					"df4 = df2.na.fill(\"Unknown\")\n",
 					"display(df4)"
 				],
-				"execution_count": null
+				"execution_count": 17
 			},
 			{
 				"cell_type": "code",
@@ -168,7 +168,7 @@
 					"\n",
 					"display(df5)"
 				],
-				"execution_count": null
+				"execution_count": 18
 			},
 			{
 				"cell_type": "code",
@@ -183,7 +183,7 @@
 					"\n",
 					"display(df6)"
 				],
-				"execution_count": null
+				"execution_count": 19
 			},
 			{
 				"cell_type": "code",
@@ -197,7 +197,7 @@
 					"df4 = df2.filter(col(\"email\").isNull())\n",
 					"display(df4)"
 				],
-				"execution_count": null
+				"execution_count": 20
 			},
 			{
 				"cell_type": "code",
@@ -208,7 +208,7 @@
 					"df3 = df2.orderBy(\"age\")\n",
 					"display(df3)"
 				],
-				"execution_count": null
+				"execution_count": 21
 			},
 			{
 				"cell_type": "code",
@@ -219,7 +219,7 @@
 					"df3 = df2.orderBy(\"age\", \"gender\")\n",
 					"display(df3)"
 				],
-				"execution_count": null
+				"execution_count": 22
 			},
 			{
 				"cell_type": "code",
@@ -232,7 +232,7 @@
 					"df3 = df2.orderBy(desc(\"age\"))\n",
 					"display(df3)"
 				],
-				"execution_count": null
+				"execution_count": 23
 			},
 			{
 				"cell_type": "code",
@@ -243,7 +243,7 @@
 					"df3 = df2.orderBy(desc(\"age\"), \"gender\")\n",
 					"display(df3)"
 				],
-				"execution_count": null
+				"execution_count": 24
 			},
 			{
 				"cell_type": "code",
@@ -252,7 +252,7 @@
 					"df3 = df2.sort(\"age\")\n",
 					"df4 = df2.sort(desc(\"age\"), \"gender\")"
 				],
-				"execution_count": null
+				"execution_count": 25
 			},
 			{
 				"cell_type": "code",
@@ -265,7 +265,7 @@
 					"df5 = df2.orderBy(col(\"email\").desc_nulls_first())\n",
 					"display(df6)"
 				],
-				"execution_count": null
+				"execution_count": 26
 			},
 			{
 				"cell_type": "code",
@@ -276,7 +276,7 @@
 					"df3 = df2.groupBy(\"gender\").count()\n",
 					"display(df3)"
 				],
-				"execution_count": null
+				"execution_count": 27
 			},
 			{
 				"cell_type": "code",
@@ -287,7 +287,7 @@
 					"df3 = df2.groupBy(\"gender\", \"customer_type\").count()\n",
 					"display(df3)"
 				],
-				"execution_count": null
+				"execution_count": 28
 			},
 			{
 				"cell_type": "code",
@@ -306,7 +306,7 @@
 					"df5 = df2.groupBy(\"gender\").agg(sum(\"age\").alias(\"total age\"), max(\"age\").alias(\"max age\"), min(\"age\").alias(\"min age\"), avg(\"age\").alias(\"average age\"))\n",
 					"display(df5)"
 				],
-				"execution_count": null
+				"execution_count": 29
 			},
 			{
 				"cell_type": "code",
@@ -326,7 +326,7 @@
 					"df11 = df2.select(concat_ws(\"@@\", \"age\", \"country\"))\n",
 					"display(df11)"
 				],
-				"execution_count": null
+				"execution_count": 30
 			},
 			{
 				"cell_type": "code",
@@ -347,7 +347,7 @@
 					"\n",
 					""
 				],
-				"execution_count": null
+				"execution_count": 31
 			},
 			{
 				"cell_type": "code",
@@ -357,24 +357,24 @@
 				"source": [
 					"# df4 = df2.select(\"ingestion_timestamp\", year(\"ingestion_timestamp\"), month(\"ingestion_timestamp\"), dayofmonth(\"ingestion_timestamp\"), hour(\"ingestion_timestamp\"), minute(\"ingestion_timestamp\"), second(\"ingestion_timestamp\"))\n",
 					"# df4 = df2.select(current_timestamp())\n",
-					"df4 = df2.select(\"ingestion_timestamp\", datediff(current_timestamp(), \"ingestion_timestamp\"))\n",
+					"# df4 = df2.select(\"ingestion_timestamp\", datediff(current_timestamp(), \"ingestion_timestamp\"))\n",
 					"\n",
 					"display(df4)"
 				],
-				"execution_count": null
+				"execution_count": 32
 			},
 			{
 				"cell_type": "code",
 				"source": [
 					"# write out put overwrite or append mode by overwrite folder or add in a new item in existing folder\n",
-					"df4.write.mode(\"overwrite\").json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/output/')\n",
+					"# df4.write.mode(\"overwrite\").json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/output/')\n",
 					"# if there is something in the folder, it will ignore\n",
 					"# f4.write.mode(\"ignore\").json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/output/')\n",
-					"f4.write.mode(\"error\").json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/output/')\n",
-					"f4.write.mode(\"error\").option(\"header\", \"True\").partitionBy(\"customer_type\").cvs('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/output/cvs_partition/')\n",
+					"# df4.write.mode(\"error\").json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/output/')\n",
+					"df2.write.mode(\"error\").option(\"header\", \"True\").partitionBy(\"customer_type\").csv('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/output/cvs_partition/')\n",
 					""
 				],
-				"execution_count": null
+				"execution_count": 36
 			},
 			{
 				"cell_type": "markdown",
