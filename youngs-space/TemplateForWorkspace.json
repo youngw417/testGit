@@ -22,22 +22,47 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('workspaceName'), '/SampleSpark')]",
-			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"name": "[concat(parameters('workspaceName'), '/Pipeline 1')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"activities": [
+					{
+						"name": "Notebook1",
+						"type": "SynapseNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebook": {
+								"referenceName": "loadpassengercount",
+								"type": "NotebookReference"
+							},
+							"snapshot": true,
+							"conf": {
+								"spark.dynamicAllocation.enabled": null,
+								"spark.dynamicAllocation.minExecutors": null,
+								"spark.dynamicAllocation.maxExecutors": null
+							},
+							"numExecutors": null
+						}
+					}
+				],
+				"concurrency": 1,
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
 				"annotations": []
 			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/spark1')]",
-			"type": "Microsoft.Synapse/workspaces/bigDataPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": []
-			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/notebooks/loadpassengercount')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('workspaceName'), '/youngs-space-WorkspaceDefaultSqlServer')]",
@@ -83,6 +108,36 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/Trigger 1')]",
+			"type": "Microsoft.Synapse/workspaces/triggers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "Pipeline 1",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Hour",
+						"interval": 6,
+						"startTime": "2025-05-31T08:39:00",
+						"timeZone": "Hawaiian Standard Time"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/Pipeline 1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/AutoResolveIntegrationRuntime')]",
 			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
 			"apiVersion": "2019-06-01-preview",
@@ -112,6 +167,26 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/sqlforpassengercount')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://youngwon2.dfs.core.windows.net/yujidb1/NYCTaxi/PassengerCountStats_parquetformat/part-00000-491ddcb4-caca-4a56-b01e-e1c77995bde1-c000.snappy.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n\nSELECT * FROM OPENROWSET(\n        BULK 'https://youngwon2.dfs.core.windows.net/yujidb1/NYCTaxi/PassengerCountStats_parquetformat/part-00000-491ddcb4-caca-4a56-b01e-e1c77995bde1-c000.snappy.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result] WHERE passenger_count = 1;\n\n\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/createsourceinstorage1')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
@@ -132,7 +207,87 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "da4e60d8-55fb-4612-a1aa-7fe12786e0be"
+						"spark.autotune.trackingId": "7d365e9a-dea7-4e41-98eb-f2d3c66158c2"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/3938e0db-babd-4824-8ebc-cf8985f73151/resourceGroups/young1/providers/Microsoft.Synapse/workspaces/youngs-space/bigDataPools/spark1",
+						"name": "spark1",
+						"type": "Spark",
+						"endpoint": "https://youngs-space.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/spark1",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.4",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							}
+						},
+						"source": [
+							"%%pyspark\n",
+							"df = spark.sql(\"SELECT * FROM nyctaxi.passengercountstats\")\n",
+							"df = df.repartition(1) # This ensures we'll get a single file during write()\n",
+							"df.write.mode(\"overwrite\").csv(\"/NYCTaxi/PassengerCountStats_csvformat\")\n",
+							"df.write.mode(\"overwrite\").parquet(\"/NYCTaxi/PassengerCountStats_parquetformat\")"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							""
+						],
+						"outputs": [],
+						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/customer-analysis')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "spark1",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "79b43c0d-fb46-4613-8221-5451aa15f122"
 					}
 				},
 				"metadata": {
@@ -168,14 +323,138 @@
 						"metadata": {
 							"microsoft": {
 								"language": "python"
-							}
+							},
+							"collapsed": false
 						},
 						"source": [
-							"%%pyspark\n",
-							"df = spark.sql(\"SELECT * FROM nyctaxi.passengercountstats\")\n",
-							"df = df.repartition(1) # This ensures we'll get a single file during write()\n",
-							"df.write.mode(\"overwrite\").csv(\"/NYCTaxi/PassengerCountStats_csvformat\")\n",
-							"df.write.mode(\"overwrite\").parquet(\"/NYCTaxi/PassengerCountStats_parquetformat\")"
+							"%%pyspark\r\n",
+							"df = spark.read.load('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/customer.csv', format='csv'\r\n",
+							"## If header exists uncomment line below\r\n",
+							"##, header=True\r\n",
+							")\r\n",
+							"display(df.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 8
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"from pyspark.sql.types import *\r\n",
+							"# Define the schema\r\n",
+							"schema = StructType([\r\n",
+							"    StructField(\"customer_id\", IntegerType(), True),\r\n",
+							"    StructField(\"name\", StringType(), True),\r\n",
+							"    StructField(\"email\", StringType(), True),\r\n",
+							"    StructField(\"country\", StringType(), True),\r\n",
+							"    StructField(\"customer_type\", StringType(), True),\r\n",
+							"    StructField(\"registration_date\", DateType(), True),\r\n",
+							"    StructField(\"age\", IntegerType(), True),\r\n",
+							"    StructField(\"gender\", StringType(), True),\r\n",
+							"    StructField(\"total_purchases\", IntegerType(), True),\r\n",
+							"    StructField(\"ingestion_timestamp\", TimestampType(), True)\r\n",
+							"])\r\n",
+							"\r\n",
+							"df1 = spark.read.csv(\"abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/customer.csv\", header=True, schema=schema)\r\n",
+							"df1.printSchema()"
+						],
+						"outputs": [],
+						"execution_count": 10
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"display(df1.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 11
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql.functions import col, column\r\n",
+							"df2 = df1.filter(df1['customer_type'] == 'VIP')\r\n",
+							"df3 = df1.filter(col('customer_type') == 'Regular')\r\n",
+							"df4 = df1.filter(column('customer_type') == 'Premium')\r\n",
+							"df5 = df1.filter(df1.customer_type == 'VIP')\r\n",
+							"df6 = df1.filter((df1.customer_type == 'VIP') & (df1.country == 'USA'))\r\n",
+							"df7 = df1.where((df1.customer_type == 'VIP') & (df1.country == 'USA'))\r\n",
+							"df8 = df1.where((df1.customer_type == 'VIP') | (df1.country == 'USA'))\r\n",
+							"display(df8.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 25
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql.functions import when\r\n",
+							"df2 = df1.withColumn(\"salary\", col(\"age\") * 1000)\r\n",
+							"df3 = df1.withColumn(\"senority\", when(col(\"age\") > 30, \"senior\").otherwise(\"junior\"))\r\n",
+							"display(df3.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 29
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df4 = df3.withColumnRenamed(\"senority\", \"is_senior\")\r\n",
+							"display(df4.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 30
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df5 = df4.drop(\"is_senior\")\r\n",
+							"df6 = df5.drop(\"is_senior\", \"age\", \"gender\")\r\n",
+							"df6.printSchema()\r\n",
+							"#display(df6.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 33
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df2 = df1.select(\"age\", \"gender\", \"customer_type\")\r\n",
+							"df3 = df1.select(\"age\", \"gender\", \"customer_type\", col('age') * 1000)\r\n",
+							"df4 = df1.select(\"age\", \"gender\", \"customer_type\", (col('age') * 1000).alias(\"salary\"))\r\n",
+							"display(df4.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 38
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"df9 = spark.read.load('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/sampleNested.json')\r\n",
+							"## If header exists uncomment line below\r\n",
+							"##, header=True\r\n",
+							")\r\n",
+							"display(df9.limit(10))"
 						],
 						"outputs": [],
 						"execution_count": null
@@ -184,10 +463,83 @@
 						"cell_type": "code",
 						"metadata": {},
 						"source": [
-							""
+							"df10 = spark.read.json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/SampleNested.json')\r\n",
+							"## If header exists uncomment line below\r\n",
+							"##, header=True"
 						],
 						"outputs": [],
 						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/loadpassengercount')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "spark1",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "099fb054-fa18-4697-83ca-af1419172f40"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/3938e0db-babd-4824-8ebc-cf8985f73151/resourceGroups/young1/providers/Microsoft.Synapse/workspaces/youngs-space/bigDataPools/spark1",
+						"name": "spark1",
+						"type": "Spark",
+						"endpoint": "https://youngs-space.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/spark1",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.4",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.read.load('abfss://yujidb1@youngwon2.dfs.core.windows.net/NYCTaxi/PassengerCountStats_parquetformat/part-00000-491ddcb4-caca-4a56-b01e-e1c77995bde1-c000.snappy.parquet', format='parquet')\r\n",
+							"display(df.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 2
 					}
 				]
 			},
@@ -244,6 +596,56 @@
 			"location": "westus2"
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/spark2')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"autoPause": {
+					"enabled": true,
+					"delayInMinutes": 15
+				},
+				"autoScale": {
+					"enabled": true,
+					"maxNodeCount": 10,
+					"minNodeCount": 3
+				},
+				"nodeCount": 10,
+				"nodeSize": "Large",
+				"nodeSizeFamily": "MemoryOptimized",
+				"sparkVersion": "3.4",
+				"isComputeIsolationEnabled": false,
+				"sessionLevelPackagesEnabled": false,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "westus2"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/spark3')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"autoPause": {
+					"enabled": true,
+					"delayInMinutes": 15
+				},
+				"autoScale": {
+					"enabled": true,
+					"maxNodeCount": 10,
+					"minNodeCount": 3
+				},
+				"nodeCount": 10,
+				"nodeSize": "XLarge",
+				"nodeSizeFamily": "MemoryOptimized",
+				"sparkVersion": "3.4",
+				"isComputeIsolationEnabled": false,
+				"sessionLevelPackagesEnabled": false,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "westus2"
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/SQLPOOL1')]",
 			"type": "Microsoft.Synapse/workspaces/sqlPools",
 			"apiVersion": "2019-06-01-preview",
@@ -256,7 +658,7 @@
 			"location": "westus2"
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/loadpassengercount')]",
+			"name": "[concat(parameters('workspaceName'), '/nested-json')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
@@ -276,7 +678,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "df311b3d-b8e4-49c4-80a0-68841f621de5"
+						"spark.autotune.trackingId": "dc909cb6-a103-4f57-8f4c-529a9ba34a1e"
 					}
 				},
 				"metadata": {
@@ -316,104 +718,81 @@
 							"collapsed": false
 						},
 						"source": [
-							"%%pyspark\r\n",
-							"df = spark.read.load('abfss://yujidb1@youngwon2.dfs.core.windows.net/NYCTaxi/PassengerCountStats_parquetformat/part-00000-491ddcb4-caca-4a56-b01e-e1c77995bde1-c000.snappy.parquet', format='parquet')\r\n",
-							"display(df.limit(10))"
+							"%%pyspark\n",
+							"df = spark.read.json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/SampleNested.json')\n",
+							"## If header exists uncomment line below\n",
+							"##, header=True\n",
+							""
 						],
 						"outputs": [],
-						"execution_count": 2
+						"execution_count": 43
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df1 = df.select(\"address.city\", \"address.state\", \"name\", \"email\")\n",
+							"display(df1.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 44
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"df2 = spark.read.load('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/customer.csv', format='csv'\n",
+							"## If header exists uncomment line below\n",
+							", header=True\n",
+							")"
+						],
+						"outputs": [],
+						"execution_count": 49
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"display(df2.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 50
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df3 = df2.filter(\"customer_type == 'VIP'\")\n",
+							"df4 = df2.filter(\"customer_type == 'Regular'\")\n",
+							"df5 = df3.union(df4)\n",
+							"df6 = df3.union(df4).union(df2)\n",
+							"df7 = df6.distinct()\n",
+							"display(df7)"
+						],
+						"outputs": [],
+						"execution_count": 56
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df8 = df7.select(\"customer_type\", \"country\").distinct()\n",
+							"display(df8)"
+						],
+						"outputs": [],
+						"execution_count": 58
 					}
 				]
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/sqlforpassengercount')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"content": {
-					"query": "-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://youngwon2.dfs.core.windows.net/yujidb1/NYCTaxi/PassengerCountStats_parquetformat/part-00000-491ddcb4-caca-4a56-b01e-e1c77995bde1-c000.snappy.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n\nSELECT * FROM OPENROWSET(\n        BULK 'https://youngwon2.dfs.core.windows.net/yujidb1/NYCTaxi/PassengerCountStats_parquetformat/part-00000-491ddcb4-caca-4a56-b01e-e1c77995bde1-c000.snappy.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result] WHERE passenger_count = 1;\n\n\n\n",
-					"metadata": {
-						"language": "sql"
-					},
-					"currentConnection": {
-						"databaseName": "master",
-						"poolName": "Built-in"
-					},
-					"resultLimit": 5000
-				},
-				"type": "SqlQuery"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/Pipeline 1')]",
-			"type": "Microsoft.Synapse/workspaces/pipelines",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"activities": [
-					{
-						"name": "Notebook1",
-						"type": "SynapseNotebook",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"notebook": {
-								"referenceName": "loadpassengercount",
-								"type": "NotebookReference"
-							},
-							"snapshot": true,
-							"conf": {}
-						}
-					}
-				],
-				"concurrency": 1,
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/notebooks/loadpassengercount')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/Trigger 1')]",
-			"type": "Microsoft.Synapse/workspaces/triggers",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "Pipeline 1",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Hour",
-						"interval": 6,
-						"startTime": "2025-05-31T08:39:00",
-						"timeZone": "Hawaiian Standard Time"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/pipelines/Pipeline 1')]"
-			]
 		}
 	]
 }
