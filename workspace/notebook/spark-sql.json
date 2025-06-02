@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "fec99ef4-4c0e-47f9-ba45-72451f79fa9e"
+				"spark.autotune.trackingId": "f8eceb20-56a2-4013-90ca-3c40126bcdae"
 			}
 		},
 		"metadata": {
@@ -181,6 +181,16 @@
 					"display(spark.sql(\"select * from customer_vip_table\"))"
 				],
 				"execution_count": 34
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"display(spark.sql(\"describe extended customer_vip_table\"))"
+				],
+				"execution_count": 35
 			}
 		]
 	}
