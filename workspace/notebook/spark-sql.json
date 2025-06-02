@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "2777b6c2-c96e-4364-b773-7ebb34636d74"
+				"spark.autotune.trackingId": "4c2eb9a2-9da1-45bd-92d8-58a2c6b79de5"
 			}
 		},
 		"metadata": {
@@ -74,9 +74,30 @@
 			{
 				"cell_type": "code",
 				"source": [
-					""
+					"df.createOrReplaceTempView(\"customer_new\")"
 				],
-				"execution_count": null
+				"execution_count": 6
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"display(spark.sql(\"show views\"))"
+				],
+				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"spark.sql(\"drop view customer_new\")\n",
+					"display(spark.sql(\"show views\"))"
+				],
+				"execution_count": 9
 			}
 		]
 	}
