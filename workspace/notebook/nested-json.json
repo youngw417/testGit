@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e94938d3-0430-4432-9950-b30cab8835c3"
+				"spark.autotune.trackingId": "76d88b3b-cd61-4032-a1e1-8c9659d85958"
 			}
 		},
 		"metadata": {
@@ -58,7 +58,7 @@
 				},
 				"source": [
 					"%%pyspark\n",
-					"df = spark.read.json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/SampleNested.json')\n",
+					"#df = spark.read.json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/SampleNested.json')\n",
 					"## If header exists uncomment line below\n",
 					"##, header=True\n",
 					""
@@ -71,8 +71,8 @@
 					"collapsed": false
 				},
 				"source": [
-					"df1 = df.select(\"address.city\", \"address.state\", \"name\", \"email\")\n",
-					"display(df1.limit(10))"
+					"# df1 = df.select(\"address.city\", \"address.state\", \"name\", \"email\")\n",
+					"# display(df1.limit(10))"
 				],
 				"execution_count": null
 			},
@@ -371,6 +371,7 @@
 					"# if there is something in the folder, it will ignore\n",
 					"# f4.write.mode(\"ignore\").json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/output/')\n",
 					"f4.write.mode(\"error\").json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/output/')\n",
+					"f4.write.mode(\"error\").option(\"header\", \"True\").partitionBy(\"customer_type\").cvs('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/output/cvs_partition/')\n",
 					""
 				],
 				"execution_count": null
