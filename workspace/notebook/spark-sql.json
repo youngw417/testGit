@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f8eceb20-56a2-4013-90ca-3c40126bcdae"
+				"spark.autotune.trackingId": "a5db16bc-4f3f-4ef7-a6a5-fbccfc953a08"
 			}
 		},
 		"metadata": {
@@ -191,6 +191,13 @@
 					"display(spark.sql(\"describe extended customer_vip_table\"))"
 				],
 				"execution_count": 35
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df2.write.mode(\"overwrite\").option(\"path\", \"external_table/data\").saveAsTable('customerVip_ext_table')"
+				],
+				"execution_count": 37
 			}
 		]
 	}
