@@ -287,7 +287,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "4d8c0bc0-a56e-4c44-aac1-d80cc4488a6b"
+						"spark.autotune.trackingId": "acd36093-2081-4bfb-a53c-b43313104eb5"
 					}
 				},
 				"metadata": {
@@ -546,6 +546,430 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/nested-json')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "spark1",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "65ff552f-54a1-4ebd-9622-03f9323279c3"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/3938e0db-babd-4824-8ebc-cf8985f73151/resourceGroups/young1/providers/Microsoft.Synapse/workspaces/youngs-space/bigDataPools/spark1",
+						"name": "spark1",
+						"type": "Spark",
+						"endpoint": "https://youngs-space.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/spark1",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.4",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\n",
+							"df = spark.read.json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/SampleNested.json')\n",
+							"## If header exists uncomment line below\n",
+							"##, header=True\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df1 = df.select(\"address.city\", \"address.state\", \"name\", \"email\")\n",
+							"display(df1.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"from pyspark.sql.types import *\n",
+							"# Define the schema\n",
+							"schema = StructType([\n",
+							"    StructField(\"customer_id\", IntegerType(), True),\n",
+							"    StructField(\"name\", StringType(), True),\n",
+							"    StructField(\"email\", StringType(), True),\n",
+							"    StructField(\"country\", StringType(), True),\n",
+							"    StructField(\"customer_type\", StringType(), True),\n",
+							"    StructField(\"registration_date\", DateType(), True),\n",
+							"    StructField(\"age\", IntegerType(), True),\n",
+							"    StructField(\"gender\", StringType(), True),\n",
+							"    StructField(\"total_purchases\", IntegerType(), True),\n",
+							"    StructField(\"ingestion_timestamp\", TimestampType(), True)\n",
+							"])\n",
+							"\n",
+							"df2 = spark.read.csv(\"abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/customer.csv\", header=True, schema=schema)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"display(df2.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df3 = df2.filter(\"customer_type == 'VIP'\")\n",
+							"df4 = df2.filter(\"customer_type == 'Regular'\")\n",
+							"df5 = df3.union(df4)\n",
+							"df6 = df3.union(df4).union(df2)\n",
+							"df7 = df6.distinct()\n",
+							"display(df7)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df8 = df7.select(\"customer_type\", \"country\").distinct()\n",
+							"display(df8)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"print(df2.count())\n",
+							"\n",
+							"df3 = df2.na.drop()\n",
+							"print(df3.count())"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df4 = df2.na.fill(\"Unknown\")\n",
+							"display(df4)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df5 = df2.na.fill({\n",
+							"    \"email\": \"Unknown\",\n",
+							"    \"age\": 0\n",
+							"})\n",
+							"\n",
+							"display(df5)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df6 = df2.fillna({\n",
+							"    \"email\": \"Unknown\",\n",
+							"    \"age\": 0\n",
+							"})\n",
+							"\n",
+							"display(df6)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"# dropping all the rows with any null value in it\n",
+							"# df3 = df2.dropna()\n",
+							"from pyspark.sql.functions import col\n",
+							"df4 = df2.filter(col(\"email\").isNull())\n",
+							"display(df4)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df3 = df2.orderBy(\"age\")\n",
+							"display(df3)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df3 = df2.orderBy(\"age\", \"gender\")\n",
+							"display(df3)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql.functions import desc\n",
+							"\n",
+							"df3 = df2.orderBy(desc(\"age\"))\n",
+							"display(df3)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df3 = df2.orderBy(desc(\"age\"), \"gender\")\n",
+							"display(df3)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"# same as orderBy\n",
+							"df3 = df2.sort(\"age\")\n",
+							"df4 = df2.sort(desc(\"age\"), \"gender\")"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df5 = df2.orderBy(col(\"email\").asc_nulls_first())\n",
+							"df6 = df2.orderBy(col(\"email\").asc_nulls_last())\n",
+							"df5 = df2.orderBy(col(\"email\").desc_nulls_first())\n",
+							"display(df6)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df3 = df2.groupBy(\"gender\").count()\n",
+							"display(df3)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df3 = df2.groupBy(\"gender\", \"customer_type\").count()\n",
+							"display(df3)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql.functions import sum, avg, max, min\n",
+							"\n",
+							"df3 = df2.groupBy(\"gender\").sum(\"age\")\n",
+							"\n",
+							"df3 = df2.groupBy(\"gender\").max(\"age\")\n",
+							"df3 = df2.groupBy(\"gender\").min(\"age\")\n",
+							"df3 = df2.groupBy(\"gender\").avg(\"age\")\n",
+							"df4 = df2.groupBy(\"gender\").agg(sum(\"age\"), max(\"age\"), min(\"age\"), avg(\"age\"))\n",
+							"df5 = df2.groupBy(\"gender\").agg(sum(\"age\").alias(\"total age\"), max(\"age\").alias(\"max age\"), min(\"age\").alias(\"min age\"), avg(\"age\").alias(\"average age\"))\n",
+							"display(df5)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql.functions import upper, lower, ltrim, rtrim, trim, regexp_replace, split, length, concat_ws\n",
+							"df3 = df2.select(upper(\"country\"))\n",
+							"df4 = df2.select(lower(\"country\"))\n",
+							"df5 = df2.select(ltrim(\"country\"), rtrim(\"country\"), trim(\"country\"))\n",
+							"df6 = df2.select(ltrim(\"country\").alias(\"left trim\"), rtrim(\"country\").alias(\"right trim\"), trim(\"country\").alias(\"trim\"))\n",
+							"df7 = df2.select(regexp_replace(col(\"country\"), \"Unknown\", \"Not Sure\"))\n",
+							"df8 = df2.select(\"email\", split(\"email\", \"@\"))\n",
+							"df9 = df2.select(\"email\", col(\"email\").contains(\"customer\"))\n",
+							"df10 = df2.select(\"email\", length(\"email\"))\n",
+							"df11 = df2.select(concat_ws(\"@@\", \"age\", \"country\"))\n",
+							"display(df11)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql.functions import *\n",
+							"\n",
+							"# df3 = df2.select(\"registration_date\", year(\"registration_date\"), month(\"registration_date\"), dayofmonth(\"registration_date\"))\n",
+							"# df4 = df2.select(\"registration_date\", dayofweek(\"registration_date\"), weekofyear(\"registration_date\"), dayofyear(\"registration_date\"), quarter(\"registration_date\"))\n",
+							"# df4 = df2.select(\"registration_date\", date_add(\"registration_date\", 10), date_sub(\"registration_date\", 10) )\n",
+							"# df4 = df2.select(\"registration_date\", date_format(\"registration_date\", \"MMMM dd, yyyy\"))\n",
+							"df4 = df2.select(current_date()).limit(1)\n",
+							"\n",
+							"display(df4)\n",
+							"\n",
+							"\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"# df4 = df2.select(\"ingestion_timestamp\", year(\"ingestion_timestamp\"), month(\"ingestion_timestamp\"), dayofmonth(\"ingestion_timestamp\"), hour(\"ingestion_timestamp\"), minute(\"ingestion_timestamp\"), second(\"ingestion_timestamp\"))\n",
+							"# df4 = df2.select(current_timestamp())\n",
+							"df4 = df2.select(\"ingestion_timestamp\", datediff(current_timestamp(), \"ingestion_timestamp\"))\n",
+							"\n",
+							"display(df4)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"# write out put overwrite or append mode by overwrite folder or add in a new item in existing folder\n",
+							"df4.write.mode(\"overwrite\").json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/output/')\n",
+							"# if there is something in the folder, it will ignore\n",
+							"# f4.write.mode(\"ignore\").json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/output/')\n",
+							"f4.write.mode(\"error\").json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/output/')\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							""
+						]
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/spark1')]",
 			"type": "Microsoft.Synapse/workspaces/bigDataPools",
 			"apiVersion": "2019-06-01-preview",
@@ -656,416 +1080,6 @@
 			},
 			"dependsOn": [],
 			"location": "westus2"
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/nested-json')]",
-			"type": "Microsoft.Synapse/workspaces/notebooks",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"nbformat": 4,
-				"nbformat_minor": 2,
-				"bigDataPool": {
-					"referenceName": "spark1",
-					"type": "BigDataPoolReference"
-				},
-				"sessionProperties": {
-					"driverMemory": "28g",
-					"driverCores": 4,
-					"executorMemory": "28g",
-					"executorCores": 4,
-					"numExecutors": 2,
-					"conf": {
-						"spark.dynamicAllocation.enabled": "false",
-						"spark.dynamicAllocation.minExecutors": "2",
-						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "9a80a322-5ee6-440a-9529-7adbec82052d"
-					}
-				},
-				"metadata": {
-					"saveOutput": true,
-					"enableDebugMode": false,
-					"kernelspec": {
-						"name": "synapse_pyspark",
-						"display_name": "Synapse PySpark"
-					},
-					"language_info": {
-						"name": "python"
-					},
-					"a365ComputeOptions": {
-						"id": "/subscriptions/3938e0db-babd-4824-8ebc-cf8985f73151/resourceGroups/young1/providers/Microsoft.Synapse/workspaces/youngs-space/bigDataPools/spark1",
-						"name": "spark1",
-						"type": "Spark",
-						"endpoint": "https://youngs-space.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/spark1",
-						"auth": {
-							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net"
-						},
-						"sparkVersion": "3.4",
-						"nodeCount": 10,
-						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
-					},
-					"sessionKeepAliveTimeout": 30
-				},
-				"cells": [
-					{
-						"cell_type": "code",
-						"metadata": {
-							"microsoft": {
-								"language": "python"
-							},
-							"collapsed": false
-						},
-						"source": [
-							"%%pyspark\n",
-							"df = spark.read.json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/SampleNested.json')\n",
-							"## If header exists uncomment line below\n",
-							"##, header=True\n",
-							""
-						],
-						"outputs": [],
-						"execution_count": 60
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"df1 = df.select(\"address.city\", \"address.state\", \"name\", \"email\")\n",
-							"display(df1.limit(10))"
-						],
-						"outputs": [],
-						"execution_count": 61
-					},
-					{
-						"cell_type": "code",
-						"metadata": {},
-						"source": [
-							"from pyspark.sql.types import *\n",
-							"# Define the schema\n",
-							"schema = StructType([\n",
-							"    StructField(\"customer_id\", IntegerType(), True),\n",
-							"    StructField(\"name\", StringType(), True),\n",
-							"    StructField(\"email\", StringType(), True),\n",
-							"    StructField(\"country\", StringType(), True),\n",
-							"    StructField(\"customer_type\", StringType(), True),\n",
-							"    StructField(\"registration_date\", DateType(), True),\n",
-							"    StructField(\"age\", IntegerType(), True),\n",
-							"    StructField(\"gender\", StringType(), True),\n",
-							"    StructField(\"total_purchases\", IntegerType(), True),\n",
-							"    StructField(\"ingestion_timestamp\", TimestampType(), True)\n",
-							"])\n",
-							"\n",
-							"df2 = spark.read.csv(\"abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/customer.csv\", header=True, schema=schema)"
-						],
-						"outputs": [],
-						"execution_count": 87
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"display(df2.limit(10))"
-						],
-						"outputs": [],
-						"execution_count": 63
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"df3 = df2.filter(\"customer_type == 'VIP'\")\n",
-							"df4 = df2.filter(\"customer_type == 'Regular'\")\n",
-							"df5 = df3.union(df4)\n",
-							"df6 = df3.union(df4).union(df2)\n",
-							"df7 = df6.distinct()\n",
-							"display(df7)"
-						],
-						"outputs": [],
-						"execution_count": 64
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"df8 = df7.select(\"customer_type\", \"country\").distinct()\n",
-							"display(df8)"
-						],
-						"outputs": [],
-						"execution_count": 65
-					},
-					{
-						"cell_type": "code",
-						"metadata": {},
-						"source": [
-							"print(df2.count())\n",
-							"\n",
-							"df3 = df2.na.drop()\n",
-							"print(df3.count())"
-						],
-						"outputs": [],
-						"execution_count": 67
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"df4 = df2.na.fill(\"Unknown\")\n",
-							"display(df4)"
-						],
-						"outputs": [],
-						"execution_count": 68
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"df5 = df2.na.fill({\n",
-							"    \"email\": \"Unknown\",\n",
-							"    \"age\": 0\n",
-							"})\n",
-							"\n",
-							"display(df5)"
-						],
-						"outputs": [],
-						"execution_count": 70
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"df6 = df2.fillna({\n",
-							"    \"email\": \"Unknown\",\n",
-							"    \"age\": 0\n",
-							"})\n",
-							"\n",
-							"display(df6)"
-						],
-						"outputs": [],
-						"execution_count": 71
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"# dropping all the rows with any null value in it\n",
-							"# df3 = df2.dropna()\n",
-							"from pyspark.sql.functions import col\n",
-							"df4 = df2.filter(col(\"email\").isNull())\n",
-							"display(df4)"
-						],
-						"outputs": [],
-						"execution_count": 75
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"df3 = df2.orderBy(\"age\")\n",
-							"display(df3)"
-						],
-						"outputs": [],
-						"execution_count": 76
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"df3 = df2.orderBy(\"age\", \"gender\")\n",
-							"display(df3)"
-						],
-						"outputs": [],
-						"execution_count": 77
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"from pyspark.sql.functions import desc\n",
-							"\n",
-							"df3 = df2.orderBy(desc(\"age\"))\n",
-							"display(df3)"
-						],
-						"outputs": [],
-						"execution_count": 78
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"df3 = df2.orderBy(desc(\"age\"), \"gender\")\n",
-							"display(df3)"
-						],
-						"outputs": [],
-						"execution_count": 79
-					},
-					{
-						"cell_type": "code",
-						"metadata": {},
-						"source": [
-							"# same as orderBy\n",
-							"df3 = df2.sort(\"age\")\n",
-							"df4 = df2.sort(desc(\"age\"), \"gender\")"
-						],
-						"outputs": [],
-						"execution_count": null
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"df5 = df2.orderBy(col(\"email\").asc_nulls_first())\n",
-							"df6 = df2.orderBy(col(\"email\").asc_nulls_last())\n",
-							"df5 = df2.orderBy(col(\"email\").desc_nulls_first())\n",
-							"display(df6)"
-						],
-						"outputs": [],
-						"execution_count": 81
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"df3 = df2.groupBy(\"gender\").count()\n",
-							"display(df3)"
-						],
-						"outputs": [],
-						"execution_count": 82
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"df3 = df2.groupBy(\"gender\", \"customer_type\").count()\n",
-							"display(df3)"
-						],
-						"outputs": [],
-						"execution_count": 83
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"from pyspark.sql.functions import sum, avg, max, min\n",
-							"\n",
-							"df3 = df2.groupBy(\"gender\").sum(\"age\")\n",
-							"\n",
-							"df3 = df2.groupBy(\"gender\").max(\"age\")\n",
-							"df3 = df2.groupBy(\"gender\").min(\"age\")\n",
-							"df3 = df2.groupBy(\"gender\").avg(\"age\")\n",
-							"df4 = df2.groupBy(\"gender\").agg(sum(\"age\"), max(\"age\"), min(\"age\"), avg(\"age\"))\n",
-							"df5 = df2.groupBy(\"gender\").agg(sum(\"age\").alias(\"total age\"), max(\"age\").alias(\"max age\"), min(\"age\").alias(\"min age\"), avg(\"age\").alias(\"average age\"))\n",
-							"display(df5)"
-						],
-						"outputs": [],
-						"execution_count": 92
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"from pyspark.sql.functions import upper, lower, ltrim, rtrim, trim, regexp_replace, split, length, concat_ws\n",
-							"df3 = df2.select(upper(\"country\"))\n",
-							"df4 = df2.select(lower(\"country\"))\n",
-							"df5 = df2.select(ltrim(\"country\"), rtrim(\"country\"), trim(\"country\"))\n",
-							"df6 = df2.select(ltrim(\"country\").alias(\"left trim\"), rtrim(\"country\").alias(\"right trim\"), trim(\"country\").alias(\"trim\"))\n",
-							"df7 = df2.select(regexp_replace(col(\"country\"), \"Unknown\", \"Not Sure\"))\n",
-							"df8 = df2.select(\"email\", split(\"email\", \"@\"))\n",
-							"df9 = df2.select(\"email\", col(\"email\").contains(\"customer\"))\n",
-							"df10 = df2.select(\"email\", length(\"email\"))\n",
-							"df11 = df2.select(concat_ws(\"@@\", \"age\", \"country\"))\n",
-							"display(df11)"
-						],
-						"outputs": [],
-						"execution_count": 104
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"from pyspark.sql.functions import *\n",
-							"\n",
-							"# df3 = df2.select(\"registration_date\", year(\"registration_date\"), month(\"registration_date\"), dayofmonth(\"registration_date\"))\n",
-							"# df4 = df2.select(\"registration_date\", dayofweek(\"registration_date\"), weekofyear(\"registration_date\"), dayofyear(\"registration_date\"), quarter(\"registration_date\"))\n",
-							"# df4 = df2.select(\"registration_date\", date_add(\"registration_date\", 10), date_sub(\"registration_date\", 10) )\n",
-							"# df4 = df2.select(\"registration_date\", date_format(\"registration_date\", \"MMMM dd, yyyy\"))\n",
-							"df4 = df2.select(current_date()).limit(1)\n",
-							"\n",
-							"display(df4)\n",
-							"\n",
-							"\n",
-							""
-						],
-						"outputs": [],
-						"execution_count": 114
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"# df4 = df2.select(\"ingestion_timestamp\", year(\"ingestion_timestamp\"), month(\"ingestion_timestamp\"), dayofmonth(\"ingestion_timestamp\"), hour(\"ingestion_timestamp\"), minute(\"ingestion_timestamp\"), second(\"ingestion_timestamp\"))\n",
-							"# df4 = df2.select(current_timestamp())\n",
-							"df4 = df2.select(\"ingestion_timestamp\", datediff(current_timestamp(), \"ingestion_timestamp\"))\n",
-							"\n",
-							"display(df4)"
-						],
-						"outputs": [],
-						"execution_count": 119
-					},
-					{
-						"cell_type": "markdown",
-						"metadata": {
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							""
-						]
-					}
-				]
-			},
-			"dependsOn": []
 		}
 	]
 }
