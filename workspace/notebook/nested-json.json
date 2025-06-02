@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "b35b74c9-f5db-41a5-bc63-8ef55957f96c"
+				"spark.autotune.trackingId": "4fb29c19-81a8-4d13-ad3f-d6adb70023ab"
 			}
 		},
 		"metadata": {
@@ -63,7 +63,7 @@
 					"##, header=True\n",
 					""
 				],
-				"execution_count": 60
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -74,7 +74,7 @@
 					"df1 = df.select(\"address.city\", \"address.state\", \"name\", \"email\")\n",
 					"display(df1.limit(10))"
 				],
-				"execution_count": 61
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -96,7 +96,7 @@
 					"\n",
 					"df2 = spark.read.csv(\"abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/customer.csv\", header=True, schema=schema)"
 				],
-				"execution_count": 87
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -106,7 +106,7 @@
 				"source": [
 					"display(df2.limit(10))"
 				],
-				"execution_count": 63
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -121,7 +121,7 @@
 					"df7 = df6.distinct()\n",
 					"display(df7)"
 				],
-				"execution_count": 64
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -132,7 +132,7 @@
 					"df8 = df7.select(\"customer_type\", \"country\").distinct()\n",
 					"display(df8)"
 				],
-				"execution_count": 65
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -142,7 +142,7 @@
 					"df3 = df2.na.drop()\n",
 					"print(df3.count())"
 				],
-				"execution_count": 67
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -153,7 +153,7 @@
 					"df4 = df2.na.fill(\"Unknown\")\n",
 					"display(df4)"
 				],
-				"execution_count": 68
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -168,7 +168,7 @@
 					"\n",
 					"display(df5)"
 				],
-				"execution_count": 70
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -183,7 +183,7 @@
 					"\n",
 					"display(df6)"
 				],
-				"execution_count": 71
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -197,7 +197,7 @@
 					"df4 = df2.filter(col(\"email\").isNull())\n",
 					"display(df4)"
 				],
-				"execution_count": 75
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -208,7 +208,7 @@
 					"df3 = df2.orderBy(\"age\")\n",
 					"display(df3)"
 				],
-				"execution_count": 76
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -219,7 +219,7 @@
 					"df3 = df2.orderBy(\"age\", \"gender\")\n",
 					"display(df3)"
 				],
-				"execution_count": 77
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -232,7 +232,7 @@
 					"df3 = df2.orderBy(desc(\"age\"))\n",
 					"display(df3)"
 				],
-				"execution_count": 78
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -243,7 +243,7 @@
 					"df3 = df2.orderBy(desc(\"age\"), \"gender\")\n",
 					"display(df3)"
 				],
-				"execution_count": 79
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -265,7 +265,7 @@
 					"df5 = df2.orderBy(col(\"email\").desc_nulls_first())\n",
 					"display(df6)"
 				],
-				"execution_count": 81
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -276,7 +276,7 @@
 					"df3 = df2.groupBy(\"gender\").count()\n",
 					"display(df3)"
 				],
-				"execution_count": 82
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -287,7 +287,7 @@
 					"df3 = df2.groupBy(\"gender\", \"customer_type\").count()\n",
 					"display(df3)"
 				],
-				"execution_count": 83
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -306,7 +306,7 @@
 					"df5 = df2.groupBy(\"gender\").agg(sum(\"age\").alias(\"total age\"), max(\"age\").alias(\"max age\"), min(\"age\").alias(\"min age\"), avg(\"age\").alias(\"average age\"))\n",
 					"display(df5)"
 				],
-				"execution_count": 92
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -326,7 +326,7 @@
 					"df11 = df2.select(concat_ws(\"@@\", \"age\", \"country\"))\n",
 					"display(df11)"
 				],
-				"execution_count": 104
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -347,7 +347,7 @@
 					"\n",
 					""
 				],
-				"execution_count": 114
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -361,7 +361,19 @@
 					"\n",
 					"display(df4)"
 				],
-				"execution_count": 119
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# write out put overwrite or append mode by overwrite folder or add in a new item in existing folder\n",
+					"df4.write.mode(\"overwrite\").json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/output/')\n",
+					"# if there is something in the folder, it will ignore\n",
+					"# f4.write.mode(\"ignore\").json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/output/')\n",
+					"f4.write.mode(\"error\").json('abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/output/')\n",
+					""
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
