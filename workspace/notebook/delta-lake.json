@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1b45e467-2aa4-4a41-a18d-80d5396dd774"
+				"spark.autotune.trackingId": "75d41b79-f0f9-4203-bfb2-ee4bb58dcb72"
 			}
 		},
 		"metadata": {
@@ -68,6 +68,23 @@
 					"display(spark.sql(\"show databases\"))"
 				],
 				"execution_count": 9
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df.write.mode(\"overwrite\").format(\"delta\").saveAsTable(\"customer_delta\")"
+				],
+				"execution_count": 11
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"display(df)"
+				],
+				"execution_count": 12
 			}
 		]
 	}
