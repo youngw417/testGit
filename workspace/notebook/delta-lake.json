@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "75d41b79-f0f9-4203-bfb2-ee4bb58dcb72"
+				"spark.autotune.trackingId": "bc78b8f3-1551-49c5-8b44-2af664f51a3b"
 			}
 		},
 		"metadata": {
@@ -50,6 +50,9 @@
 		"cells": [
 			{
 				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
 				"source": [
 					"df = spark.read.csv(\"abfss://spark-training@youngwon2.dfs.core.windows.net/exercise/customer.csv\", header=True, inferSchema = True)\n",
 					"display(df)\n",
@@ -57,7 +60,7 @@
 					"spark.sql(\"create database retaildb\")\n",
 					""
 				],
-				"execution_count": null
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -85,6 +88,30 @@
 					"display(df)"
 				],
 				"execution_count": 12
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"display(spark.sql(\"describe extended customer_delta\"))"
+				],
+				"execution_count": 1
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df.write.mode(\"overwrite\").format(\"delta\").saveAsTable(\"retaildb.customer_delta\")"
+				],
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"display(spark.sql(\"select * from retaildb.customer_delta\"))"
+				],
+				"execution_count": 5
 			}
 		]
 	}
