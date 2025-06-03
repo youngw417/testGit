@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "bc78b8f3-1551-49c5-8b44-2af664f51a3b"
+				"spark.autotune.trackingId": "b198e0f5-a955-4c23-9e15-b13c5aaa01d8"
 			}
 		},
 		"metadata": {
@@ -60,7 +60,7 @@
 					"spark.sql(\"create database retaildb\")\n",
 					""
 				],
-				"execution_count": 3
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -70,14 +70,14 @@
 				"source": [
 					"display(spark.sql(\"show databases\"))"
 				],
-				"execution_count": 9
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
 				"source": [
 					"df.write.mode(\"overwrite\").format(\"delta\").saveAsTable(\"customer_delta\")"
 				],
-				"execution_count": 11
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -87,7 +87,7 @@
 				"source": [
 					"display(df)"
 				],
-				"execution_count": 12
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -97,21 +97,125 @@
 				"source": [
 					"display(spark.sql(\"describe extended customer_delta\"))"
 				],
-				"execution_count": 1
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
 				"source": [
 					"df.write.mode(\"overwrite\").format(\"delta\").saveAsTable(\"retaildb.customer_delta\")"
 				],
-				"execution_count": 4
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"display(spark.sql(\"select * from retaildb.customer_delta\"))"
+				],
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
 				"source": [
-					"display(spark.sql(\"select * from retaildb.customer_delta\"))"
+					"df1 = spark.sql(\"insert into customer_delta values (1001, 'Deepak goyal', 'admin@azurelib.com', 'India', 'Premium', current_date(), 35, 'Male', 100000, current_timestamp())\")"
 				],
-				"execution_count": 5
+				"execution_count": 9
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"display(spark.sql(\"select * from customer_delta\"))"
+				],
+				"execution_count": 10
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"display(spark.sql(\"select count(*) from customer_delta\"))"
+				],
+				"execution_count": 11
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"spark.sql(\"update customer_delta set customer_type = 'Regular' where customer_id = 1001\" )"
+				],
+				"execution_count": 12
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"display(spark.sql(\"select * from customer_delta\"))"
+				],
+				"execution_count": 13
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"spark.sql(\"delete from customer_delta where customer_id = 1001\")"
+				],
+				"execution_count": 14
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"display(spark.sql(\"describe history customer_delta\"))"
+				],
+				"execution_count": 15
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df1 = spark.sql(\"select * from customer_delta version as of 0\")\n",
+					"display(df1)"
+				],
+				"execution_count": 16
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df1 = spark.sql(\"select * from customer_delta version as of 1\")\n",
+					"display(df1)"
+				],
+				"execution_count": 17
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df2 = spark.sql(\"select * from customer_delta timestamp as of '2025-06-03 04:14:52.085'\")\n",
+					"display(df2)"
+				],
+				"execution_count": 19
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"spark.sql(\"RESTORE customer_delta to version as of 1\")"
+				],
+				"execution_count": 20
 			}
 		]
 	}
